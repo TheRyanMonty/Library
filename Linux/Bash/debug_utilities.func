@@ -1,0 +1,25 @@
+#!/bin/bash
+################################################################################
+##
+##      debug_utilities.func
+##
+################################################################################
+##
+##	Description: List all variables for debugging
+##  Dependencies: 
+##
+################################################################################
+
+DebugListVariables () {
+#########################################################################
+### DebugListVariables - Purpose is for debug, to list script variables
+### 	and exit successfully
+#########################################################################
+
+#List variables in script for debugging, modularity and efficiency then exit
+#List all variables used by the script (lowercase only) to look at what needs cleaned up for the function
+set -o posix ; set | grep ^[a-z]
+
+#exit
+exit 0
+}

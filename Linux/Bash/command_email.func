@@ -1,0 +1,72 @@
+#!/bin/bash
+################################################################################
+##
+##      email_file.func
+##
+################################################################################
+##
+##	Description: Functions that are related to email functionality
+##  Dependencies: 
+##
+################################################################################
+
+
+EmailCheck () {
+############################################################################
+### EmailCheck - Purpose is to verify email is setup appropriately on host
+############################################################################
+##
+##  Output: 0 = Success, 1 = Failure
+##
+############################################################################
+
+#Determine if mailx is installed, if so, continue
+if [ ! -x /usr/bin/mailx ] && [ ! -x /usr/sbin/sendmail ]; then
+	FatalLogging "/usr/bin/mailx or /usr/sbin/sendmail does not exist or is not executable, ensure they are installed and executable."
+	return 1
+fi
+
+#Exit with status of 0
+return 0
+}
+
+
+EmailFile () {
+############################################################################
+### EmailFile - Purpose is to email a file to configured recipients
+############################################################################
+##
+##	Assumed incoming argument order:
+##    $1 = Email recipients
+##    $2 = File to email
+##    $3 = Subject line
+##
+##  Output: 0 = Success, 1 = Failure
+##
+############################################################################
+
+#Assign variables from incoming arguments
+local_email_recipients=$1
+local_file=$2
+local_subject_line=$3
+
+#Determine if the email recipient variable is declared, if so encode and send the log file
+if [ -z ${local_email_recipients} ]; then
+	WarnLogging "The email recipients are not configured, will not send email."
+	return 1
+else
+	echo " " | mailx -s "${local_subject_line}" -a ${local_file} ${local_email_recipients}
+	if [ "$?" != "0" ]; then
+		FatalLogging  "Command failed: mailx -s ${local_subject_line} -a ${local_file} ${local_email_recipients}"
+		return 1
+	fi 
+fi
+
+#Unset used variables to make modular
+unset local_email_recipients
+unset local_file
+unset local_subject_line
+
+#Exit with status of 0
+return 0
+}

@@ -1,0 +1,24 @@
+#!/bin/bash
+################################################################################
+##
+##      file_mgmt.func
+##
+################################################################################
+##
+##	Description: Functions that are helpful on managing files
+##  Dependencies: 
+##
+################################################################################
+
+RemoveFile ()  {
+#############################################################################
+### RemoveFile - Purpose is to remove file(s) passed in
+#############################################################################
+rm -f ${1}
+if [ "$?" != "0" ]; then
+    FatalLogging  "Command failed: rm -f ${1} - check permissions on file and that the file exists."
+    return 1
+fi 
+#Exit successfully
+return 0
+}

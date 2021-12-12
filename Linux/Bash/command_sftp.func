@@ -1,0 +1,77 @@
+#!/bin/bash
+################################################################################
+##
+##      command_sftp.func
+##
+################################################################################
+##
+##	Description: Functions that are around general SFTP functionality
+##  Dependencies: logging.func, retry.func
+##
+################################################################################
+
+SFTPCheck () {
+############################################################################
+### SFTPCheck - Purpose is to check sftp is setup prior to running a command
+############################################################################
+##
+##  Output: 0 = Success, 1 = Failure
+##
+############################################################################
+if [[ ! -x /usr/bin/sftp ]]; then
+	#sFTP is not installed
+	FatalLogging "sFTP is not installed or executable: /usr/bin/sftp"
+	return 1
+fi
+#Exit Successfully
+return 0
+}
+
+CallSFTP () {
+############################################################################
+### CallSFTP - Purpose is to call the sftp command in a standard way
+############################################################################
+##
+##	Assumed incoming argument order:
+##    $1 = SFTP IP
+##    $2 = SFTP Port
+##    $3 = SFTP batch
+##    $4 = SFTP User
+##
+##  Output: 0 = Success, 1 = Failure
+##
+############################################################################
+
+#Assign variables from incoming arguments
+local_sftp_ip=$1
+local_sftp_port=$2
+local_sftp_batch=$3
+local_sftp_user=$4
+
+#Determine if user/pass is specified, if so use them, if not assume public key authentication
+if [[ ${local_sftp_user} ]]; then
+	#Attempt to sftp to server on required port
+	DebugLogging "Custom user specified, attempting to login with custom user"
+	#Error and exit if can't connect to basic test
+	RetryCommand "/usr/bin/sftp -b ${local_sftp_batch} -oPort=${local_sftp_port} ${local_sftp_user}@${local_sftp_ip}"
+	if [ "$?" != "0" ]; then
+		FatalLogging "Custom user (${local_sftp_user}) test on sFTP IP (${local_sftp_ip}) and sFTP port (${local_sftp_port}) failed"
+	fi
+else
+	#Attempt to sftp to server on required port
+	DebugLogging "No user specified, attempting to login with public key authentication"
+	#Error and exit if can't connect to basic test
+	RetryCommand "/usr/bin/sftp -b ${local_sftp_batch} -oPort=${local_sftp_port} ${local_sftp_ip}"
+	if [ "$?" != "0" ]; then
+		FatalLogging  "Public key authentication test on sFTP IP (${local_sftp_ip}) and sFTP port (${local_sftp_port}) failed"
+	fi
+fi
+
+#Unset defined variables
+unset local_sftp_ip
+unset local_sftp_port
+unset local_sftp_batch
+unset local_sftp_user
+
+return 0
+}

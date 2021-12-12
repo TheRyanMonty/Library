@@ -1,0 +1,35 @@
+#!/bin/bash
+################################################################################
+##
+##      error_mgmt.func
+##
+################################################################################
+##
+##	Description: Functions that capture errors and verify exit codes
+##  Dependencies: logging.func
+##
+################################################################################
+
+CaptureExitCode () {
+######################################################################
+### CaptureExitCode - Purpose is to capture exit code of last command
+######################################################################
+EXITCODE=$?
+}
+
+VerifyExitCode () {
+########################################################################
+### VerifyExitCode - Purpose is to verify the exit code of last command
+### 	and if in error notify the log, cleanup and exit
+##
+##  Output: Sets variable FailState for broader script to handle for cleanup and exit
+########################################################################
+if [ "$EXITCODE" != "0" ] ; then
+	FatalLogging "Error: An error (Exit code $EXITCODE) occurred during the last action"
+	FatalLogging "$*"
+	fail_state=1
+	return 1
+fi
+
+return 0
+}

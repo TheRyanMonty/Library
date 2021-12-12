@@ -1,0 +1,147 @@
+#!/bin/bash
+################################################################################
+##
+##      logging.func
+##
+################################################################################
+##
+##	Description: Functions that handle logging from scripts
+##  Dependencies: log_level, system_logging, log_file, log_instancee_file and custom_logging all need to be defined by the script / config file before calling this function file
+##
+## Example:
+#################################################################################
+## Logging Setup
+#################################################################################
+#System logging - by default it's assumed the system logging facility (logger) is used
+# Default location is /var/log/messages
+#system_logging=y
+#
+# Log level:
+#  0 = Off
+#  1 = Fatal
+#  2 = Error
+#  3 = Warning
+#  4 = Informational
+#  5 = Debug
+#  6 = Trace
+#log_level=6
+#
+################################################################################
+
+#######################################
+#Log Levels: Fatal, Error, Warn, Info, Debug, Trace
+#######################################
+
+TraceLogging () {
+######################################################################
+### TraceLogging - Purpose is to log out trace level messages
+######################################################################
+
+#Trace logging is 6
+#Determine if established loglevel is 6 or greater to include
+if [[ "${log_level}" -ge "6" ]]; then
+	if [[ "${system_logging}" = "y" ]]; then
+		/usr/bin/logger "TRACE - ${FUNCNAME[@]} - $* "
+	fi
+	if [[ "${custom_logging}" = "y" ]]; then
+		/bin/echo "$(date) - PID $$ - Trace - $* " | tee -a ${log_file} ${log_instance_file} >/dev/null
+	fi
+fi
+#Exit Successfully
+return 0
+}
+
+DebugLogging () {
+######################################################################
+### DebugLogging - Purpose is to log out debug messages
+######################################################################
+
+#Debug logging is 5
+#Determine if established loglevel is 5 or greater to include
+if [[ "${log_level}" -ge "5" ]]; then
+	if [[ "${system_logging}" = "y" ]]; then
+		/usr/bin/logger "Debug - ${FUNCNAME[@]} - $* "
+	fi
+	if [[ "${custom_logging}" = "y" ]]; then
+		/bin/echo "$(date) - PID $$ - Debug - $* " | tee -a ${log_file} ${log_instance_file} >/dev/null
+	fi
+fi
+#Exit Successfully
+return 0
+}
+
+InfoLogging () {
+######################################################################
+### InfoLogging - Purpose is to log out informative messages
+######################################################################
+
+#Informational logging is 4
+#Determine if established loglevel is 4 or greater to include
+if [[ "${log_level}" -ge "4" ]]; then
+	if [[ "${system_logging}" = "y" ]]; then
+		/usr/bin/logger "Info - ${FUNCNAME[@]} - $* "
+	fi
+	if [[ "${custom_logging}" = "y" ]]; then
+		/bin/echo "$(date) - PID $$ - Info - $* " | tee -a ${log_file} ${log_instance_file} >/dev/null
+	fi
+fi
+#Exit Successfully
+return 0
+}
+
+WarnLogging () {
+######################################################################
+### WarnLogging - Purpose is to log out warning messages
+######################################################################
+
+#Warning logging is 3
+#Determine if established loglevel is 3 or greater to include
+if [[ "${log_level}" -ge "3" ]]; then
+	if [[ "${system_logging}" = "y" ]]; then
+		/usr/bin/logger "Warning - ${FUNCNAME[@]} - $* "
+	fi
+	if [[ "${custom_logging}" = "y" ]]; then
+		/bin/echo "$(date) - PID $$ - Warning - $* " | tee -a ${log_file} ${log_instance_file} >/dev/null
+	fi
+fi
+#Exit Successfully
+return 0
+}
+
+ErrorLogging () {
+######################################################################
+### ErrorLogging - Purpose is to log out error messages
+######################################################################
+
+#Error logging is 2
+#Determine if established loglevel is 2 or greater to include
+if [[ "${log_level}" -ge "2" ]]; then
+	if [[ "${system_logging}" = "y" ]]; then
+		/usr/bin/logger "Error - ${FUNCNAME[@]} - $* "
+	fi
+	if [[ "${custom_logging}" = "y" ]]; then
+		/bin/echo "$(date) - PID $$ - Error - $* " | tee -a ${log_file} ${log_instance_file} >/dev/null
+	fi
+fi
+#Exit Successfully
+return 0
+}
+
+FatalLogging () {
+######################################################################
+### FatalLogging - Purpose is to log out warning messages
+######################################################################
+
+#Fatal logging is 1
+#Determine if established loglevel is 1 or greater to include
+if [[ "${log_level}" -ge "1" ]]; then
+	if [[ "${system_logging}" = "y" ]]; then
+		/usr/bin/logger "Fatal - ${FUNCNAME[@]} - $* "
+	fi
+	if [[ "${custom_logging}" = "y" ]]; then
+		/bin/echo "$(date) - PID $$ - Fatal - $* " | tee -a ${log_file} ${log_instance_file} >/dev/null
+	fi
+fi
+#Exit Successfully
+return 0
+}

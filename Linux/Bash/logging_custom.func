@@ -1,0 +1,153 @@
+#!/bin/bash
+################################################################################
+##
+##      logging_custom.func
+##
+################################################################################
+##
+##	Description: Functions to setup custom logging
+##  Dependencies: file_mgmt.func, error_mgmt.func
+##  Variable Dependencies: log_file_name_prefix, custom_logging
+##
+################################################################################
+
+LoggingDirSetupCustom () {
+if [[ "${custom_logging}" = "y" ]]; then
+	#Check if log folder exists and if not, create it
+	if [[ ! -d ${log_location_custom} ]]; then
+		if mkdir -p ${log_location_custom}; then
+			:
+		else 
+			FatalLogging "${log_location_custom} for logging doesn't exist."
+			return 1
+		fi
+	fi
+
+	#Check if log directory is writable, if not try to make it writable
+	if [[ -w ${log_location} ]]; then
+		:
+	else
+		if chmod +w ${log_location}; then
+			:
+		else
+			StatsMessage "${log_location} is not writable and must be writable for operation."
+			return 1
+		fi
+	fi
+else
+	DebugLogging "Parameter custom_logging is not defined, skipping LoggingDirSetup function."
+	return 0
+fi
+#Exit successfully
+return 0
+}
+
+LoggingSetupCustom () {
+############################################################################
+### LoggingSetupCustom - Purpose is to perform checks and setup logging for script
+############################################################################
+if [[ "${custom_logging}" = "y" ]]; then
+	#Define global log file
+	log_file=${log_location}/${log_file_name_prefix}.log
+	DebugLogging "Log file is ${log_file}"
+
+	#Define instance based log file for future emailing
+	log_instance_file=${log_location}/${log_file_name_prefix}_instance_$$_$(date +%Y%m%d%H%M%S).log
+	DebugLogging "Debug log instance file is ${log_instance_file}"
+
+	#Check if a log file exists appropriate to write to, if not try to create it, all else fails exit
+	[ -w ${log_file} ] || touch ${log_file}
+	if [ "$?" != "0" ]; then
+		FatalLogging  "Unable to create ${log_file} as the log file. Exiting..."
+		return 1
+	fi 
+
+
+	#Sanity check the log variables
+	if [[ ${log_days_before_compress} =~ ^-?[0-9]+$ ]]; then
+		:
+	else
+		FatalLogging "The log_days_before_compress option in the config file is not a number in days. Exiting..."
+		return 1
+	fi
+
+	if [[ ${log_days_before_purge} =~ ^-?[0-9]+$ ]]; then
+		:
+	else
+		FatalLogging "The log_days_before_purge option in the config file is not a number in days. Exiting..."
+		return 1
+	fi
+fi
+#Exit Successfully
+return 0
+}
+
+LoggingRotationCustom () {
+############################################################################
+### LoggingRotationCustom - Purpose is to rotate logs based on user preferences
+############################################################################
+if [[ "${custom_logging}" = "y" ]]; then
+	#Check age of existing log since epoch in seconds
+	log_age=`stat -c '%W' ${log_file}`
+
+	#Determine age of log in days by subtracting current date since epoch in seconds
+	log_age=$(( `date +%s` - ${log_age} ))
+
+	#Convert the age into days - seconds in a day is 86,400
+	#Only integers are done, so if less than a whole number it will default to the previous full number
+	log_age=$(( ${log_age} / 86400 ))
+	DebugLogging "Age of log file ${log_file} is ${log_age} in days"
+
+	#Determine if the age meets the requirement rename and compress if older than config setting, then rename and compress
+	if [[ ${log_age} -gt ${log_days_before_compress} ]]; then
+		#Determine appropriate name for a compressed log file
+		log_file_compressed=${log_file%.*}_$(date +%Y%m%d%H%M%S).${log_file##*.}
+		DebugLogging "Renaming ${log_file} ${log_file_compressed} and compressing..."
+		mv -f ${log_file} ${log_file_compressed}
+		if [ "$?" != "0" ]; then
+			FatalLogging  "Unable to rename ${log_file} ${log_file_compressed} log. Exiting..."
+			return 1
+		fi 
+		gzip ${log_file_compressed}
+		if [ "$?" != "0" ]; then
+			FatalLogging  "Unable to compress ${log_file_compressed} log. Exiting..."
+			return 1
+		fi 
+		DebugLogging "Compression to ${log_file_compressed}.gz successful"
+		DebugLogging "Recreating ${log_file}"
+		#Recreate the original log file
+		touch ${log_file}
+		if [ "$?" != "0" ]; then
+			FatalLogging  "Unable to create the log ${log_file}. Exiting..."
+			return 1
+		fi 
+	fi
+
+	#Determine if each compressed log file is older than the purge date, if they are then purge
+	if compgen -G "${log_location}/${log_file_name_prefix}*.gz" > /dev/null; then
+		for compressed_log in `ls ${log_location}/${log_file_name_prefix}*.gz`; do
+			#Check age of existing log since epoch in seconds
+			compressed_log_age=`stat -c '%W' ${compressed_log}`
+			#Determine age of log in days by subtracting current date since epoch in seconds
+			compressed_log_age=$(( `date +%s` - ${compressed_log_age} ))
+			#Convert the age into days - seconds in a day is 86,400
+			#Only integers are done, so if less than a whole number it will default to the previous full number
+			compressed_log_age=$(( ${compressed_log_age} / 86400 ))
+			DebugLogging "Compressed log ${compressed_log} age is ${compressed_log_age} in days"
+			#Determine if the age meets the requirement purge if older than config setting, then purge
+			if [[ ${compressed_log_age} -gt ${log_days_before_purge} ]]; then
+				DebugLogging "Compressed log ${compressed_log} age is higher than ${log_days_before_purge}, deleting ${compressed_log}.."
+				rm -f ${compressed_log}
+				if [ "$?" != "0" ]; then
+					FatalLogging  "Unable to remove ${compressed_log} log. Exiting..."
+					return 1
+				fi 
+				DebugLogging "Deletion of ${compressed_log} successful!"
+			fi
+			unset compresed_log_age
+		done
+	fi
+fi
+#Exit successfully
+return 0
+}

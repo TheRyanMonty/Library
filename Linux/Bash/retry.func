@@ -1,0 +1,46 @@
+#!/bin/bash
+################################################################################
+##
+##      retry.func
+##
+################################################################################
+##
+##	Description: Functions that are related to retrying commands on failure
+##  Dependencies: logging.func
+##
+################################################################################
+
+RetryCommand () {
+############################################################################
+### RetryCommand - Purpose is to retry command passed in 5 times on failure
+############################################################################
+#Establish variables for command and a counter
+local_command=$*
+local_retry_counter=0
+#Until loop for the counter (sleep should be 60)
+until [ $local_retry_counter -ge 5 ]; do
+        local_retry_counter=$[$local_retry_counter+1]
+		DebugLogging "Starting attempt ${local_retry_counter} of ${local_command}..."
+		#Must reset EXITCODE variable to successful if future retries are successful due to how EXITCODE is captured and set
+		if [ ${EXITCODE} ]; then
+			EXITCODE=0
+		fi
+        ${local_command} >>${log_instance_file} 2>&1 && break
+		#Reset exitcode to results of last command in case loop finishes unsuccessfully
+		EXITCODE=$?
+		#Pause script to iterate, default to 60 seconds
+		sleep 1
+done
+
+#Check final command exit code
+if [ "$EXITCODE" != "0" ] ; then
+	FatalLogging "Error: An error (Exit code $EXITCODE) occurred during the last action"
+	FatalLogging "5 Failures occurred from command ${local_command} - exiting..."
+	return 1
+elif [ "$EXITCODE" = "0"]
+	#Unset locally defined variables to make modular
+	unset local_command
+	unset retry_counter
+	return 0
+fi
+}
