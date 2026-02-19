@@ -1,3 +1,4 @@
+package MyConcreteClasses;
 import java.util.Collection;
 
 public interface MyQueue<E> extends Collection<E> {

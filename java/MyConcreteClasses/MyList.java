@@ -1,3 +1,4 @@
+package MyConcreteClasses;
 import java.util.Collection;
 
 public interface MyList<E> extends java.util.Collection<E> {
