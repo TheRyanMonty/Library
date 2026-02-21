@@ -1,4 +1,3 @@
-package MyConcreteClasses;
 import java.util.*;
 
 @SuppressWarnings("unchecked")
@@ -75,10 +74,8 @@ public class MyArrayList<E> implements MyList<E> {
     //POST:checks data elements if found, returns true
     //     else returns false
     public boolean contains(Object e) {
-        for (int i = 0; i < size; i++)
-            if (e.equals(data[i])) return true;
-
-        return false;
+        //Use null safe indexOf logic to profide boolean return
+        return indexOf(e) >= 0;
     }
 
     @Override  
@@ -114,9 +111,19 @@ public class MyArrayList<E> implements MyList<E> {
     //PRE: accepts an object
     //POST:returns the index if found or -1 if not 
     public int indexOf(Object e) {
-        for (int i = 0; i < size; i++)
-           if (e.equals(data[i])) return i;
-
+        //Check for null value of the passed in element
+        if (e == null) {
+            //If e object is null, iterate through the dataset to find the index value of a null entry 
+            for (int i = 0; i < size; i++) 
+                //Once idenfitied, return the index value
+                if (data[i] == null) return i;
+        } else {
+            //Loop through each element within the dataset to find e
+            for (int i = 0; i < size; i++)
+                //return index value of element e within the dataset data
+                if (e.equals(data[i])) return i;
+        }
+        //If not found, return -1
         return -1;
     }
 
@@ -125,8 +132,17 @@ public class MyArrayList<E> implements MyList<E> {
     //PRE: accepts an object
     //POST:returns the last index if found or -1 if not 
     public int lastIndexOf(E e) {
-        for (int i = size - 1; i >= 0; i--)
-        if (e.equals(data[i])) return i;
+        //Check for null value of the passed in element
+        if (e == null) {
+            //Reverse search for a null value in data
+            for (int i = size - 1; i >= 0; i--) 
+                //Once idenfitied, return the index value
+                if (data[i] == null) return i;
+        } else {
+            //Reverse search for the element in data
+            for (int i = size - 1; i >= 0; i--)
+                if (e.equals(data[i])) return i;
+        }
 
         return -1;
     }
@@ -135,7 +151,7 @@ public class MyArrayList<E> implements MyList<E> {
     //Remove the element at the specified position in this list
     //PRE: accepts the index value
     //POST:verifies the value (will throw an exception if invalid)
-    //     shift any subsequent elements to the left of the index
+    //     shift all elements to the right of the index one position to the left
     //     Return the element that was removed from the list.  
     //     decrement size
     //     return element
@@ -161,7 +177,7 @@ public class MyArrayList<E> implements MyList<E> {
     //POST:verifies the value (will throw an exception if invalid)
     //     saves old value at the index
     //     sets index value to new element  
-    //     returns element
+    //     returns the old element which was replaced
     public E set(int index, E e) {
         //Verify the Value
         checkIndex(index);
@@ -202,7 +218,7 @@ public class MyArrayList<E> implements MyList<E> {
 
     @Override
     //Returns an array of Object for the elements in this collection.
-    //PRE: none
+    //PRE: Initialized list in data
     //POST: creates an array of objects, 
     //      copies elements from array to new array & returns new array
     public Object[] toArray() {
@@ -219,7 +235,6 @@ public class MyArrayList<E> implements MyList<E> {
     //     returns true if data was updated 
 
     public boolean addAll(Collection<? extends E> c) {
-        System.out.println("Need to write: addAll");
         //Create object a to evaluate
         Object[] a = c.toArray();
         //Determine length of a array
@@ -247,7 +262,7 @@ public class MyArrayList<E> implements MyList<E> {
         //System.out.println("Need to write: containsAll");
         //Check each object in the collection
         for (Object o : c) {
-            if (!contains((E)o))
+            if (!contains(o))
                     return false;
         }
         return true;
@@ -304,6 +319,7 @@ public class MyArrayList<E> implements MyList<E> {
 
     private class ArrayListIterator implements java.util.Iterator<E> {
         private int current = 0; // Current index
+        private boolean canRemove = false; //Can we safely remove
 
         @Override
         public boolean hasNext() {
@@ -312,12 +328,23 @@ public class MyArrayList<E> implements MyList<E> {
 
         @Override
         public E next() {
+            //If there is no next element, throw an exception
+            if (!hasNext()) throw new NoSuchElementException();
+            //Otherwise, set the canRemove flag to true and return data
+            canRemove = true;
             return data[current++];
         }
 
         @Override
         public void remove() {
-            MyArrayList.this.remove(current);
+            //Ensure canRemove is true, next() must be called first so we know value can be removed
+            if (!canRemove) {
+                throw new IllegalStateException("next() must be called before remove().");
+            }
+            //Remove the target element
+            MyArrayList.this.remove(--current);
+            //Reset canRemove to false, next must be called to validate
+            canRemove = false;
         }
     }
 

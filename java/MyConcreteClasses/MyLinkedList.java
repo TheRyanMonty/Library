@@ -1,12 +1,11 @@
-package MyConcreteClasses;
+import java.util.*;
 
 public class MyLinkedList<E> implements MyList<E> {
   private Node<E> head, tail;
   private int size = 0; // Number of elements in the list
   
   //Constructor:  Create a default list 
-  public MyLinkedList() {
-  }
+  public MyLinkedList() {}
 
   //Constructor: Create a list from an array of objects 
   public MyLinkedList(E[] objects) {
@@ -78,7 +77,6 @@ public class MyLinkedList<E> implements MyList<E> {
   }
 
   @Override 
-  //TASK 1: COMPLETE THE ADD METHOD
   //Add a new element at the specified index in this list
   //PRE: accepts the element to add & index location
   //POST:if index is 0 - addfirst
@@ -87,18 +85,23 @@ public class MyLinkedList<E> implements MyList<E> {
   //     adjust pointers, increase size
 
   public void add(int index, E e) {
-    if (index == 0) {
-      addFirst(e);
-    }
-    else if (index >= size) {
-      addLast(e);
-    }
-    else {
-      //COMPLETE THE ADD STEPS HERE
-      System.out.println("You must add the logic for method: add");
-    }
+      if (index == 0) {
+          addFirst(e);
+      } else if (index >= size) {
+          addLast(e);
+      } else {
+          Node<E> current = head;
+          // Move to the node at index - 1
+          for (int i = 1; i < index; i++) {
+              current = current.next;
+          }
+          // Stitch in the new node
+          Node<E> temp = current.next;
+          current.next = new Node<>(e);
+          (current.next).next = temp;
+          size++;
+      }
   }
-
 
   //TASK 2: ADD BEFORE
   //PRE:  Accepts 2 values: the Prior value & the value to add 
@@ -275,11 +278,21 @@ public class MyLinkedList<E> implements MyList<E> {
   @Override 
   //Return the index of the first matching object or -1 if not found
   //PRE: accepts an object
-  //POST:returns the index if found or -1 if not 
-
+  //POST: returns the index if found or -1 if not 
   public int indexOf(Object e) {
-    System.out.println("You must add the logic for method: indexOf");
-    return -1;
+      Node<E> current = head;
+      if (e == null) {
+          for (int i = 0; i < size; i++) {
+              if (current.element == null) return i;
+              current = current.next;
+          }
+      } else {
+          for (int i = 0; i < size; i++) {
+              if (e.equals(current.element)) return i;
+              current = current.next;
+          }
+      }
+      return -1;
   }
 
   @Override 
