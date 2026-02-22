@@ -3,10 +3,16 @@ import java.util.*;
 @SuppressWarnings("unchecked")
 
 public class MyArrayList<E> implements MyList<E> {
-    
+    ///////////////////////////
+    //Variable Declaration
+    ///////////////////////////
     public static final int INITIAL_CAPACITY = 5;
     private E[] data = (E[]) new Object[INITIAL_CAPACITY];
     private int size = 0;
+
+    ///////////////////////////
+    //Constructors
+    ///////////////////////////
 
     //Constructor:  Create a default list 
     public MyArrayList() { }
@@ -17,16 +23,19 @@ public class MyArrayList<E> implements MyList<E> {
            add(objects[i]); // Warning: don't use super(objects)!
     }
 
+    ///////////////////////////
+    //Methods
+    ///////////////////////////
     @Override 
-    //Add a new element at the specified index   
-    //PRE: Accepts the index & value to add
-    //POST:Verify the index is valid, if not, throw exception
-    //     use ensureCapacity to add additional space if there is not enough capacity in the array
-    //     shift elements in array to the right following the location
-    //     add data item at the index position
-    //     increase size    
     public void add(int index, E e) {
- 
+        //Add a new element at the specified index   
+        //PRE: Accepts the index & value to add
+        //POST:Verify the index is valid, if not, throw exception
+        //     use ensureCapacity to add additional space if there is not enough capacity in the array
+        //     shift elements in array to the right following the location
+        //     add data item at the index position
+        //     increase size    
+
         // Check index
         if (index < 0 || index > size)
             throw new IndexOutOfBoundsException("Index: " + index + " < size: " + size);
@@ -44,12 +53,11 @@ public class MyArrayList<E> implements MyList<E> {
         size++;
     }
 
-
-    /** Create a new larger array, double the current size + 1 */
-    //PRE: none (this is a helper method)
-    //POST: checks if the size of the array is at capacity
-    //      if so, it doubles the size of the array & copies data to new array   
     private void ensureCapacity() {
+        /** Create a new larger array, double the current size + 1 */
+        //PRE: none (this is a helper method)
+        //POST: checks if the size of the array is at capacity
+        //      if so, it doubles the size of the array & copies data to new array   
         //if the current size exceeds the data size
         if (size >= data.length) {
             E[] newData = (E[])(new Object[size * 2 + 1]);
@@ -59,58 +67,56 @@ public class MyArrayList<E> implements MyList<E> {
     }
 
     @Override 
-    //Clear the list
-    //PRE: none
-    //POST:allocate an empty array of objects
-    //     sets size to 0
     public void clear() {
+        //Clear the list
+        //PRE: none
+        //POST:allocate an empty array of objects
+        //     sets size to 0
         data = (E[])new Object[INITIAL_CAPACITY];
         size = 0;
     }
 
     @Override 
-    //Return true if this list contains the element 
-    //PRE: accepts the object
-    //POST:checks data elements if found, returns true
-    //     else returns false
     public boolean contains(Object e) {
+        //Return true if this list contains the element 
+        //PRE: accepts the object
+        //POST:checks data elements if found, returns true
+        //     else returns false
         //Use null safe indexOf logic to profide boolean return
         return indexOf(e) >= 0;
     }
 
     @Override  
-    //Retrieve the element at the index position
-    //PRE: accepts the index
-    //POST:verify the index & throw out of bounds if invalid
-    //     return the element 
     public E get(int index) {
+        //Retrieve the element at the index position
+        //PRE: accepts the index
+        //POST:verify the index & throw out of bounds if invalid
+        //     return the element 
         checkIndex(index);
         return data[index];
     }
 
-    //verify the index (helper method)
-    //PRE: none
-    //POST:throw out of bounds if index is invalid 
     private void checkIndex(int index) {
+        //verify the index (helper method)
+        //PRE: none
+        //POST:throw out of bounds if index is invalid 
         if (index < 0 || index >= size)
-            throw new IndexOutOfBoundsException
-                ("index " + index + " out of bounds");
+            throw new IndexOutOfBoundsException("index " + index + " out of bounds");
     }
 
-
     @Override
-    //get the size of the array
-    //PRE: none
-    //POST:return the size of the array
     public int size(){
+        //Get the size of the array
+        //PRE: none
+        //POST:return the size of the array
         return size;
     }
 
     @Override 
-    //Abstract Method: Return the index of the first matching object or -1 if not found
-    //PRE: accepts an object
-    //POST:returns the index if found or -1 if not 
     public int indexOf(Object e) {
+        //Abstract Method: Return the index of the first matching object or -1 if not found
+        //PRE: accepts an object
+        //POST:returns the index if found or -1 if not 
         //Check for null value of the passed in element
         if (e == null) {
             //If e object is null, iterate through the dataset to find the index value of a null entry 
@@ -128,10 +134,10 @@ public class MyArrayList<E> implements MyList<E> {
     }
 
     @Override  
-    //Returns the last index of the matching object or -1 if not found
-    //PRE: accepts an object
-    //POST:returns the last index if found or -1 if not 
     public int lastIndexOf(E e) {
+        //Returns the last index of the matching object or -1 if not found
+        //PRE: accepts an object
+        //POST:returns the last index if found or -1 if not 
         //Check for null value of the passed in element
         if (e == null) {
             //Reverse search for a null value in data
@@ -148,14 +154,14 @@ public class MyArrayList<E> implements MyList<E> {
     }
 
     @Override 
-    //Remove the element at the specified position in this list
-    //PRE: accepts the index value
-    //POST:verifies the value (will throw an exception if invalid)
-    //     shift all elements to the right of the index one position to the left
-    //     Return the element that was removed from the list.  
-    //     decrement size
-    //     return element
     public E remove(int index) {
+        //Remove the element at the specified position in this list
+        //PRE: accepts the index value
+        //POST:verifies the value (will throw an exception if invalid)
+        //     shift all elements to the right of the index one position to the left
+        //     Return the element that was removed from the list.  
+        //     decrement size
+        //     return element
         //Verify the value
         checkIndex(index);
         E temp = (E) data[index];
@@ -172,13 +178,14 @@ public class MyArrayList<E> implements MyList<E> {
     }
 
     @Override 
-    //Replace the element at the specified position with new element
-    //PRE: accepts the index value & new element
-    //POST:verifies the value (will throw an exception if invalid)
-    //     saves old value at the index
-    //     sets index value to new element  
-    //     returns the old element which was replaced
+
     public E set(int index, E e) {
+        //Replace the element at the specified position with new element
+        //PRE: accepts the index value & new element
+        //POST:verifies the value (will throw an exception if invalid)
+        //     saves old value at the index
+        //     sets index value to new element  
+        //     returns the old element which was replaced
         //Verify the Value
         checkIndex(index);
         //Save old value at the index
@@ -189,12 +196,11 @@ public class MyArrayList<E> implements MyList<E> {
         return temp;
     }
     
-
     @Override
-    //Create a string that holds values in the array
-    //PRE: none
-    //POST:creates a string with array values & returns string
     public String toString() {
+        //Create a string that holds values in the array
+        //PRE: none
+        //POST:creates a string with array values & returns string
         StringBuilder result = new StringBuilder("[");
 
         for (int i = 0; i < size; i++) {
@@ -205,10 +211,10 @@ public class MyArrayList<E> implements MyList<E> {
         return result.toString() + "]";
     }
 
-    //Trims the capacity to current size 
-    //PRE: none
-    //POST:cuts the array to the number of elements in the array (size)
     public void trimToSize() {
+        //Trims the capacity to current size 
+        //PRE: none
+        //POST:cuts the array to the number of elements in the array (size)
         if (size != data.length) {
             E[] newData = (E[])(new Object[size]);
             System.arraycopy(data, 0, newData, 0, size);
@@ -217,24 +223,22 @@ public class MyArrayList<E> implements MyList<E> {
     }
 
     @Override
-    //Returns an array of Object for the elements in this collection.
-    //PRE: Initialized list in data
-    //POST: creates an array of objects, 
-    //      copies elements from array to new array & returns new array
     public Object[] toArray() {
+        //Returns an array of Object for the elements in this collection.
+        //PRE: Initialized list in data
+        //POST: creates an array of objects, 
+        //      copies elements from array to new array & returns new array
         //System.out.println("Need to write: toArray");
         E[] newArray = (E[])(new Object[size]);
         System.arraycopy(data, 0, newArray, 0, size);
         return newArray;
     }
 
-    
     @Override
-    //PRE: Accepts a list of items 'c'
-    //POST Adds all the elements in the collection c 
-    //     returns true if data was updated 
-
     public boolean addAll(Collection<? extends E> c) {
+        //PRE: Accepts a list of items 'c'
+        //POST Adds all the elements in the collection c 
+        //     returns true if data was updated 
         //Create object a to evaluate
         Object[] a = c.toArray();
         //Determine length of a array
@@ -254,11 +258,11 @@ public class MyArrayList<E> implements MyList<E> {
     }
     
     @Override
-    //Returns true if the collection contains all the elements in c.
-    //PRE: accepts a generic collection of objects
-    //POST:if these are the same, return true
-    //     else returm false  
     public boolean containsAll(Collection<?> c) {
+        //Returns true if the collection contains all the elements in c.
+        //PRE: accepts a generic collection of objects
+        //POST:if these are the same, return true
+        //     else returm false  
         //System.out.println("Need to write: containsAll");
         //Check each object in the collection
         for (Object o : c) {
@@ -269,11 +273,11 @@ public class MyArrayList<E> implements MyList<E> {
     }
 
     @Override
-    //Removes all the elements in c from this collection.
-    //PRE: Accepts a list of items 'c'
-    //POST Adds all the elements in the collection c 
-    //     returns true if data was updated 
     public boolean removeAll(Collection<?> c) {
+        //Removes all the elements in c from this collection.
+        //PRE: Accepts a list of items 'c'
+        //POST Adds all the elements in the collection c 
+        //     returns true if data was updated 
         int writeIndex = 0;
         boolean modified = false;
         //Loop through collection, check if the process will modify or note
@@ -295,31 +299,37 @@ public class MyArrayList<E> implements MyList<E> {
 
     }
 
-
+    // TODO: Not implemented at this time
     @Override
     public <T> T[] toArray(T[] array) {
         // not implementing at this time
         return null;
     }
 
+    // TODO: Not implemented at this time
     @Override
-    //Retains the elements that are both in c and in this collection.
     public boolean retainAll(Collection<?> c) {
+        //Retains the elements that are both in c and in this collection
         // not implementing at this time
         return false;
     }
     
     @Override 
-    //Override iterator() defined in Iterable 
-    //PRE: none
-    //POST return a new array list iterator
     public java.util.Iterator<E> iterator() {
+        //Override iterator() defined in Iterable 
+        //PRE: none
+        //POST return a new array list iterator
         return new ArrayListIterator();
     }
 
+  ///////////////////////////
+  //Classes
+  ///////////////////////////
     private class ArrayListIterator implements java.util.Iterator<E> {
-        private int current = 0; // Current index
-        private boolean canRemove = false; //Can we safely remove
+        //Current index
+        private int current = 0; 
+        //Can we safely remove
+        private boolean canRemove = false; 
 
         @Override
         public boolean hasNext() {
