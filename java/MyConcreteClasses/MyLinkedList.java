@@ -56,12 +56,17 @@ public class MyLinkedList<E> implements MyList<E> {
     //     adds the element as the new 'head' element
     //     adjusts tail if the list was empty
     //     increases the size of the list
-    Node<E> newNode = new Node<>(e);  // Create a new node
-    newNode.next = head;              // link the new node with the head
-    head = newNode;                   // head points to the new node
-    size++;                           // Increase list size
-
-    if (tail == null)                 // the new node is the only node in list
+    //Create a new node
+    Node<E> newNode = new Node<>(e);  
+    //Link the new node with the head
+    newNode.next = head; 
+    //Assign newnode to head           
+    head = newNode;           
+    //Increment list size        
+    size++;                           
+    //If the new node is the only node in list
+    if (tail == null)
+      //Assign head to tail      
       tail = head;
   }
 
@@ -72,17 +77,21 @@ public class MyLinkedList<E> implements MyList<E> {
     //     adds the element as the tail element
     //     adjusts head if the list was empty 
     //     increases the size of the list
-    Node<E> newNode = new Node<>(e);  // Create a new for element e
-
+    //Create a new node for imported element e
+    Node<E> newNode = new Node<>(e);  
+    
+    //If the list is empty
     if (tail == null) {
-      head = tail = newNode;          // The new node is the only node in list
+      //Assign newnode to both head and tail
+      head = tail = newNode;
     }
     else {
-      tail.next = newNode;            // Link the new with the last node
-      tail = newNode;                 // tail now points to the last node
+      //Otherwise, assign newnode to tail.next and tail
+      tail.next = newNode;
+      tail = newNode; 
     }
-
-    size++;                           // Increase size
+    //Increment size counter
+    size++;                           
   }
 
   @Override 
@@ -93,21 +102,25 @@ public class MyLinkedList<E> implements MyList<E> {
     //     if index is at or after size - addlast
     //     create node, get to index position
     //     adjust pointers, increase size
+
     if (index == 0) {
-        addFirst(e);
+      //If the index is at the front, add first
+      addFirst(e);
     } else if (index >= size) {
-        addLast(e);
+      //If the index is past the size, add to the end
+      addLast(e);
     } else {
-        Node<E> current = head;
-        // Move to the node at index - 1
-        for (int i = 1; i < index; i++) {
-            current = current.next;
-        }
-        // Stitch in the new node
-        Node<E> temp = current.next;
-        current.next = new Node<>(e);
-        (current.next).next = temp;
-        size++;
+      //Create the new node
+      Node<E> current = head;
+      //Move to the node at provided index value - 1
+      for (int i = 1; i < index; i++) {
+          current = current.next;
+      }
+      //Stitch in the new node
+      Node<E> temp = current.next;
+      current.next = new Node<>(e);
+      (current.next).next = temp;
+      size++;
     }
   }
 
@@ -121,7 +134,7 @@ public class MyLinkedList<E> implements MyList<E> {
         return;
     }
 
-    //Search for the prior element
+    //Assign previous to head, and current to head's next temporarily for switching
     Node<E> previous = head;
     Node<E> current = head.next;
 
@@ -130,12 +143,16 @@ public class MyLinkedList<E> implements MyList<E> {
         //Once prior entry is found/matches current elemnt, and it is not null, assign new node to it
         if (current != null && Objects.equals(current.element, prior)) {
             Node<E> newNode = new Node<>(data);
-            newNode.next = current;    // New node points forward to target
-            previous.next = newNode;   // Previous node points to new node
+            //New node points forward to target
+            newNode.next = current;  
+            //Previous node points to new node  
+            previous.next = newNode;  
+            //Increment size 
             size++;
-            return; // Exit once added
+            //Return when done
+            return; 
         }
-        // Move both pointers forward
+        //Move both pointers forward
         previous = current;
         current = current.next;
     }
@@ -148,45 +165,60 @@ public class MyLinkedList<E> implements MyList<E> {
     //POST: Check if list is empty (return null if so)
     //      save head element, remove head value & adjust pointers
     //      return saved element 
+
+    //If the array is empty, return null
     if (size == 0) {
       return null;
     }
+    //If the array has 1 entry, be sure to set head and tail to null
     else if (size == 1) {
       E temp = head.element;
       head = tail = null;
       size = 0;
       return temp;
     }
+    //Otherwise set the temp value to be returned
     else {
       E temp = head.element;
+      //Set the next value to current value
       head = head.next;
+      //Decremenet size
       size--;
+      //Return temp value removed
       return temp;
     }
   }
 
   public E removeLast() {
     // Remove the last node and return the object that is contained in the removed node.
+    //PRE: None
+    //POST: Return deleted value, if a value is deleted
+
+    //If the size is 0, return null as nothing is removed
     if (size == 0) 
       return null;
-
+    //If the size is 1, remove the element and set head and tail to null
     else if (size == 1) {
       E temp = head.element;
       head = tail = null;
       size = 0;
       return temp;
     }
+    //Otherwise, assign current as temp value
     else {
       Node<E> current = head;
-
+      //Iterate throught he loop to the second to last value (future last value)
+      // and assign it to current
       for (int i = 0; i < size - 2; i++) {
         current = current.next;
       }
-
+      //Remove final element, reset tail to current with no next
       E temp = tail.element;
       tail = current;
       tail.next = null;
+      //Decrement size
       size--;
+      //Return the removed value
       return temp;
     }
   }
@@ -195,8 +227,9 @@ public class MyLinkedList<E> implements MyList<E> {
     //PRE:   Function accepts the element value immediately AFTER node to be deleted
     //POST:  The node prior to the value given is deleted 
 
-    //If the list too small or nothing before the head, return null
-    if (size < 2 || Objects.equals(head.element, prior)) {
+    //If the list too small or nothing before the head, return null and error
+    if (size < 2 ) {
+        System.out.println("Error: List is too small to manipulate!");
         return null;
     }
 
@@ -205,20 +238,28 @@ public class MyLinkedList<E> implements MyList<E> {
         return removeFirst();
     }
 
-    Node<E> previous = head;
+    //Assign head to temp
+    Node<E> temp = head;
     
-    // We stop when grandPrev.next.next is the 'prior' node
+    //Iterate through the loop to search for prior node
     for (int i = 0; i < size - 2; i++) {
-        if (previous.next.next != null && Objects.equals(previous.next.next.element, prior)) {
-            E deletedData = previous.next.element; // Save data to return
-            previous.next = previous.next.next;  // Jump over the middle node
+        //Stop when temp.next.next is the 'prior' node
+        if (temp.next != null && Objects.equals(temp.next.next.element, prior)) {
+            //Save data to return
+            E deletedData = temp.next.element; 
+            //Jump over the middle node
+            temp.next = temp.next.next;  
+            //Decrement size
             size--;
+            //Return the deleted data
             return deletedData;
         }
-        previous = previous.next;
+        //Iterate temp after checking for equivalence with prior
+        temp = temp.next;
     }
 
-    return null; // Prior not found
+    //Prior not found, return null
+    return null; 
   }
 
   @Override  
@@ -230,25 +271,33 @@ public class MyLinkedList<E> implements MyList<E> {
     //     else find index position & adjust pointers  
     //     decrement size
     //     return value
+
+    //If the index value is outside of range, return null
     if (index < 0 || index >= size) {
       return null;
     }
+    //If there's only one entry, call removefirst
     else if (index == 0) {
       return removeFirst();
     }
+    //If we're removing the last value, call removelast
     else if (index == size - 1) {
       return removeLast();
     }
+    //Otherwise, assign temp to iterate through the list starting with head
     else {
-      Node<E> previous = head;
-
+      Node<E> temp = head;
+      //Iterate through the list, stopping at 1 before index
       for (int i = 1; i < index; i++) {
-        previous = previous.next;
+        temp = temp.next;
       }
-
-      Node<E> current = previous.next;
-      previous.next = current.next;
+      //Copy node to be removed to current
+      Node<E> current = temp.next;
+      //Connect item previous to index and item after index
+      temp.next = current.next;
+      //Decrement size
       size--;
+      //Return removed value
       return current.element;
     }
   }
@@ -312,18 +361,24 @@ public class MyLinkedList<E> implements MyList<E> {
     //Return the index of the first matching object or -1 if not found
     //PRE: accepts an object
     //POST: returns the index if found or -1 if not 
+    
+    //Assign head to current
     Node<E> current = head;
+    //If imported object is null, iterate and search for null specifically to avoid 
+    // null pointer exception
     if (e == null) {
         for (int i = 0; i < size; i++) {
             if (current.element == null) return i;
             current = current.next;
         }
     } else {
+      //Otherwise iterate through the list to identify the index and return it
         for (int i = 0; i < size; i++) {
             if (e.equals(current.element)) return i;
             current = current.next;
         }
     }
+    //If not found, return -1
     return -1;
   }
 
@@ -332,14 +387,20 @@ public class MyLinkedList<E> implements MyList<E> {
     //Returns the last index of the matching object or -1 if not found
     //PRE: accepts an object
     //POST:returns the last index if found or -1 if not 
+    //Temp value to hold index position
     int lastIndex = -1;
+    //Assign current temp node to iterate through to find the passed in value
     Node<E> current = head;
+    //Iterate through the list based on index to find the element
     for (int i = 0; i < size; i++) {
+        //If it's found, assign lsatIndex to index position
         if (Objects.equals(current.element, e)) {
             lastIndex = i;
         }
+        //Iterate through the next item in the list
         current = current.next;
     }
+    //Return the lastIndex value
     return lastIndex;
   }
 
@@ -351,13 +412,20 @@ public class MyLinkedList<E> implements MyList<E> {
     //     saves old value at the index
     //     sets index value to new element  
     //     returns element
+    //If the index range is invalid, return null
     if (index < 0 || index >= size) return null;
+    //Assign the current node to head to iterate through
     Node<E> current = head;
+    //For loop to iterate through the loop, moving to the index item
     for (int i = 0; i < index; i++) {
+        //Move each item over
         current = current.next;
     }
+    //Assign current element to old element
     E oldElement = current.element;
+    //Assign the new element to the current element
     current.element = e;
+    //Return the replaced element
     return oldElement;
   }
   
