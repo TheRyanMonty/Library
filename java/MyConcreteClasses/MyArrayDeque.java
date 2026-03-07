@@ -114,6 +114,14 @@ public class MyArrayDeque<E> {
 
     private void resize() {
         System.out.println("TASK 1: RESIZE NEEDS TO BE CODED");
+        E[] newData = new E[data.length*2];
+
+        for ( int i = 0; i < data.length; i++) {
+            newData[i] = data[(head + i)% data.length];
+        }
+        head = 0;
+        tail = size;
+        data = newData;
     }
 
     public int size() {
