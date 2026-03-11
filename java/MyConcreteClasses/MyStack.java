@@ -1,3 +1,5 @@
+import java.util.EmptyStackException;
+
 public class MyStack<E extends Comparable<? super E>> {
 
     private final MyDblLinkedList<E> list = new MyDblLinkedList<E>();
@@ -7,10 +9,14 @@ public class MyStack<E extends Comparable<? super E>> {
     }
 
     public E pop() {
+        //Just in case, throw exception if is empty
+        if (isEmpty()) throw new EmptyStackException();
         return list.removeFirst();
     }
 
     public E peek() {
+        //Just in case, throw exception if is empty
+        if (isEmpty()) throw new EmptyStackException();
         return list.getFirst();
     }
 
