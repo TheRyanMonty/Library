@@ -73,7 +73,6 @@ public class MyArrayDeque<E> {
         return item;
     }
     
-    //TODO: TASK 3: REMOVELAST
     public E removeLast(){
         //PRE: none
         //POST: if list is not empty, reset the tail 
@@ -83,12 +82,11 @@ public class MyArrayDeque<E> {
 
         //SIMILAR: E pollLast();
         //tail points 1 past the last element
-        if (isEmpty()) {
-            throw new IllegalStateException("Deque is empty");
-        }
-
-        System.out.println("TASK 3: REMOVE LAST NEEDS TO BE CODED");
-        return null;
+        if (isEmpty()) throw new IllegalStateException("Deque is empty");
+        tail = (tail - 1 + data.length) % data.length;
+        E item = (E) data[tail];
+        data[tail] = null;size--;
+        return item;
     }
 
     public E getFirst() {
@@ -106,7 +104,7 @@ public class MyArrayDeque<E> {
         if (isEmpty()) {
             throw new IllegalStateException("Deque is empty");
         }
-        return (E)data[tail];
+        return (E) data[(tail - 1 + data.length) % data.length];
     }
   
     @SuppressWarnings("unchecked")
@@ -162,16 +160,38 @@ public class MyArrayDeque<E> {
         return sb.toString();
     }
  
-    //TODO: TASK 4: REMOVEITEM
-    public void removeItem(E e){
+    public void removeItem(E e) {
         //PRE:  accepts an item to remove
         //POST: removes item from queue, leaving
         //      remaining items in order
-        if (isEmpty()) {
-            throw new IllegalStateException("Deque is empty");
+        //If the deque is empty, return
+        if (isEmpty()) return;
+        //Initialize index counter
+        int i = 0;
+        //Iterate through searching for element starting at the head
+        while (i < size) {
+            int currentIndex = (head + i) % data.length;
+            
+            //If the value of current position equals elemeent, shift the elements after
+            if (Objects.equals(data[currentIndex], e)) {
+                //Shift all elements after 'i' one position to the left
+                for (int j = i; j < size - 1; j++) {
+                    int current = (head + j) % data.length;
+                    int next = (head + j + 1) % data.length;
+                    data[current] = data[next];
+                }
+                
+                //Clear out the last element
+                int lastIdx = (head + size - 1) % data.length;
+                data[lastIdx] = null;
+                //Decrement size
+                size--;
+            } else {
+                i++;
+            }
         }
-
-        System.out.println("TASK 4: REMOVE ITEM NEEDS TO BE CODED");
+        // Synchronize the tail pointer with the new size
+        tail = (head + size) % data.length;
     }
 
     @SuppressWarnings("unchecked")
@@ -181,10 +201,12 @@ public class MyArrayDeque<E> {
         //      added as priority
         //POST: adds new item & places based on
         //      highest value
+        //If the container is full, resize it
         if (size == data.length) 
             resize();
+        //Initialize variables
         int pos = 0, newPos = 0, i = 0;
-        //loop through data to spot of insertion
+        //Loop through data to spot of insertion
         for (i = 0; i < size; i++){
             pos = (head + i) % data.length;
             E posValue = (E) data[pos];
@@ -194,14 +216,17 @@ public class MyArrayDeque<E> {
                 if (((Comparable<Object>)posValue).compareTo(e) < 0)
                     break;
         }
-        //move items from index to the right
+        //Move items from index to the right
         for (int j = size; j > i; j--){
             pos = (head + j - 1) % data.length;
             newPos = (head + j) % data.length;
             data[newPos] = data[pos];
         }
+        //Increment size due to addition
         size ++;
+        //Assign new value at correct position
         data[(head + i )% data.length] = e;
+        //Reassign tail to correct position
         tail = (head + size) % data.length;
     }
 }
