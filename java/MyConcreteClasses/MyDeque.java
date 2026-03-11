@@ -1,5 +1,3 @@
-import java.util.Collection;
-
 public interface MyDeque<E> extends MyQueue<E> {
 
     // Insert at front
