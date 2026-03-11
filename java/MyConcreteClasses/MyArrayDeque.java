@@ -174,7 +174,6 @@ public class MyArrayDeque<E> {
         System.out.println("TASK 4: REMOVE ITEM NEEDS TO BE CODED");
     }
 
-    //TODO: TASK 5: ADDPRIORITY
     @SuppressWarnings("unchecked")
     public void addPriority(E e){
         //PRE:  accepts new item to add
@@ -182,7 +181,27 @@ public class MyArrayDeque<E> {
         //      added as priority
         //POST: adds new item & places based on
         //      highest value
-        System.out.println("TASK 5: ADD PRIORITY NEEDS TO BE CODED");
+        if (size == data.length) 
+            resize();
+        int pos = 0, newPos = 0, i = 0;
+        //loop through data to spot of insertion
+        for (i = 0; i < size; i++){
+            pos = (head + i) % data.length;
+            E posValue = (E) data[pos];
 
+            if (posValue instanceof Comparable &&
+                 e instanceof Comparable)
+                if (((Comparable<Object>)posValue).compareTo(e) < 0)
+                    break;
+        }
+        //move items from index to the right
+        for (int j = size; j > i; j--){
+            pos = (head + j - 1) % data.length;
+            newPos = (head + j) % data.length;
+            data[newPos] = data[pos];
+        }
+        size ++;
+        data[(head + i )% data.length] = e;
+        tail = (head + size) % data.length;
     }
 }
