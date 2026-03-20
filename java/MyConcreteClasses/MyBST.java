@@ -22,15 +22,14 @@ public class MyBST<E extends Comparable<E>> implements MyTree<E> {
 
 
   @Override
-  //PRE:  accepts an element to add into the tree
-  //POST: if tree is empty, sets root to new node, 
-  //           update size, returns true
-  //      else searches for a place to insert
-  //      if element is already in the tree, return false
-  //      else add the node to the correct 'side' of parent
-  //      update size and return true
-
   public boolean insert(E e){
+    //PRE:  accepts an element to add into the tree
+    //POST: if tree is empty, sets root to new node, 
+    //           update size, returns true
+    //      else searches for a place to insert
+    //      if element is already in the tree, return false
+    //      else add the node to the correct 'side' of parent
+    //      update size and return true
     if (root == null){
       root = createNewNode(e);
       size ++;
@@ -62,19 +61,26 @@ public class MyBST<E extends Comparable<E>> implements MyTree<E> {
   }
     
   @Override
-  //TASK 1: SEARCH
-  //PRE:  accepts an element to find in the tree
-  //POST: if tree is found return true, else return false
-
   public boolean search(E e){
+    //PRE:  accepts an element to find in the tree
+    //POST: if tree is found return true, else return false
+    //Start at root, if empty, return false
     TreeNode<E> current = root;
-    System.out.println("TASK 1: Code search method");
+
+    while (current != null){
+      if (e.compareTo(current.element) < 0)
+        current = current.left;
+      else if (e.compareTo(current.element) > 0)
+        current = current.right;
+      else
+       return true;
+    }
     return false;
   }
 
-  //PRE:  none
-  //POST: prints tree inOrder
   public void inOrder(){
+    //PRE:  none
+    //POST: prints tree inOrder
     inOrder(root);
   }
 
@@ -85,29 +91,48 @@ public class MyBST<E extends Comparable<E>> implements MyTree<E> {
     inOrder(root.right);
   }
 
-  //TASK 2: PREORDER
-  //PRE:  none
-  //POST: prints tree preOrder
-  public void preOrder(){
-    System.out.println("TASK 2: Code preOrder");
+  public void preOrder() {
+    // PRE: none
+    // POST: prints tree preOrder (Root, Left, Right)
+    preOrder(root);
   }
 
-
-  //TASK 3: POSTORDER
-  //PRE:  none
-  //POST: prints tree postOrder
-  public void postOrder(){
-    System.out.println("TASK 3: Code postOrder");
+  public void preOrder(TreeNode<E> root) {
+    if (root == null) return;
+    
+    // Visit the Root
+    System.out.print(root.element + " ");
+    
+    // Traverse Left
+    preOrder(root.left);
+    
+    // Traverse Right
+    preOrder(root.right);
   }
 
+  public void postOrder() {
+    // PRE:  none
+    // POST: prints tree postOrder (Left, Right, Root)
+    postOrder(root);
+  }
 
-  //TASK 4: DELETE METHOD
-  //PRE:  accepts an element to delete in the tree
-  //POST: if element is found, delete & return true,
-  //      else return false
+  private void postOrder(TreeNode<E> root) {
+    if (root == null) return;
+
+    // Traverse Left subtree
+    postOrder(root.left);
+
+    // Traverse Right subtree
+    postOrder(root.right);
+
+    // Visit Root (print element)
+    System.out.print(root.element + " ");
+  }
 
   public boolean delete(E e){
-
+    //PRE:  accepts an element to delete in the tree
+    //POST: if element is found, delete & return true,
+    //      else return false
   //find the element
     TreeNode<E> parent = null;
     TreeNode<E> current = root;
@@ -170,10 +195,10 @@ public class MyBST<E extends Comparable<E>> implements MyTree<E> {
     size = 0;
   }
 
-  //PRE:  none
-  //POST: prints tree in order *generic
-  //      using recursive calls
   public String inOrderString() {
+    //PRE:  none
+    //POST: prints tree in order *generic
+    //      using recursive calls
       StringBuilder sb = new StringBuilder();
       inOrderString(root, sb);
       return sb.toString().trim();
@@ -187,75 +212,99 @@ public class MyBST<E extends Comparable<E>> implements MyTree<E> {
       inOrderString(root.right, sb);
   }
 
-  //TASK 5: ISLEAF
-  //PRE:  accepts an element to find in the tree
-  //POST: returns true if this is a leaf, false otherwise
-
-  public boolean isLeaf(E e){
+  public boolean isLeaf(E e) {
     TreeNode<E> current = root;
-    System.out.println("TASK 5: code isLeaf method");
+
+    // Search for the node containing element e
+    while (current != null) {
+      if (e.compareTo(current.element) < 0) {
+        current = current.left;
+      } else if (e.compareTo(current.element) > 0) {
+        current = current.right;
+      } else {
+        // Node has been found, check if it is a leaf
+        return current.left == null && current.right == null;
+      }
+    }
+    
+    // The provided element was not found in the tree
     return false;
   }
-
-  //TASK 6: heightWrapper
-  //PRE:  none - start at root
-  //POST: returns the height of the tree
 
   public int heightWrapper(){
-    TreeNode<E> current = root;
-    return height(current);
+    //PRE:  none - start at root
+    //POST: returns the height of the tree
+    return height(root);
   }
 
-  private int height(TreeNode<E> root){
-    System.out.println("TASK 6: code height method");
-    return 0;
+  public int height(TreeNode<E> root) {
+    if (root == null) {
+      return -1; 
+    }
+    
+    return 1 + Math.max(height(root.left), height(root.right));
   }
-
-  //TASK 7: Depth
-  //PRE:  accepts an element to find in the tree
-  //POST: returns the depth of the node in the tree
-  //      or -1 if not found
 
   public int depth(E e){
+    //PRE:  accepts an element to find in the tree
+    //POST: returns the depth of the node in the tree
+    //      or -1 if not found
     TreeNode<E> current = root;
-    int depthCount = -1;
-    System.out.println("TASK 6: code depth method");
-    return -1;
-  }
+    int depthCount = 0;
 
-  
-  //TASK 8: MINIMUM
-  //PRE:  none
-  //POST: returns the minimum element in the BST
+    while (current != null) {
+      int comparison = e.compareTo(current.element);
+      if (comparison < 0) {
+        current = current.left;
+        depthCount++;
+      } else if (comparison > 0) {
+        current = current.right;
+        depthCount++;
+      } else {
+         //Node has been found
+        return depthCount;
+      }
+    }
+    //Element is not in the tree
+    return -1; 
+  }
 
   public E findMin(){
+    //PRE:  none
+    //POST: returns the minimum element in the BST
+    if (root == null) return null;
+    
     TreeNode<E> current = root;
-    System.out.println("TASK 8: code minimum method");
-      
-    return null;
+    while (current.left != null) {
+      current = current.left;
+    }
+    return current.element;
   }
-
-  //TASK 8: MAXIMUM
-  //PRE:  none
-  //POST: returns the maximum element in the BST
 
   public E findMax(){
-    TreeNode<E> current = root;
-    System.out.println("TASK 8: code maximum method");
-      
-    return null;
-  }
+    //PRE:  none
+    //POST: returns the maximum element in the BST
+    if (root == null) return null;
 
-  //TASK 9: UPDATE
-  //PRE:  accepts original element value & new value
-  //POST: updates the original value in the BST
+    TreeNode<E> current = root;
+    while (current.right != null) {
+      current = current.right;
+    }
+    return current.element;
+  }
 
   public boolean update(E origE, E newE){
-
-    System.out.println("TASK 9: code update method");
+    //PRE:  accepts original element value & new value
+    //POST: updates the original value in the BST
+    if (delete(origE)) {
+      // 2. If deleted successfully, insert the new element
+      insert(newE);
+      return true;
+    }
+    
+    // Original element was not found
     return false;
   }
-
 
   @Override /** Override iterator() defined in Iterable */
   public java.util.Iterator<E> iterator() {
