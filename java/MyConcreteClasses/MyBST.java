@@ -133,7 +133,7 @@ public class MyBST<E extends Comparable<E>> implements MyTree<E> {
     //PRE:  accepts an element to delete in the tree
     //POST: if element is found, delete & return true,
     //      else return false
-  //find the element
+    //find the element
     TreeNode<E> parent = null;
     TreeNode<E> current = root;
 
