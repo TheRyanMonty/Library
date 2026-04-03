@@ -17,101 +17,99 @@ public class MyHeap <E extends Comparable<E>>  {
         max = b;
     }
 
-    public MyHeap(E[] objList){
-        max = true;
-        for (int i = 0; i < objList.length; i++)
-            add(objList[i]);
-    } 
+    public MyHeap(E[] objList) {
+        this(objList, true);
+    }
 
-    public MyHeap(E[] objList, boolean b){
+
+    public MyHeap(E[] objList, boolean b) {
         max = b;
-        for (int i = 0; i < objList.length; i++)
-            add(objList[i]);
-    } 
-
-
-    //TASK 1:  ADD MIN LOGIC FOR ADD
-    //PRE:   Accepts the item
-    //POST:  Adds item to the end of MyHeap
-    //       As long as the parent node is larger (if max), swap
-    public void add(E element){
-
-        //add to end of the heap
-        myHeap.add(element);
-        int currPos = myHeap.size() - 1;
-
-        //reheap 'up'
-        //if compareTo > 0 then currPos > parPos (swap)
-        //TASK 1:  ADD MIN LOGIC FOR ADD
-        while (currPos > 0){
-            int parPos = (currPos - 1)/2;
-            if (max && myHeap.get(currPos).compareTo(myHeap.get(parPos)) > 0){
-                E temp = myHeap.get(currPos);
-                myHeap.set(currPos, myHeap.get(parPos));
-                myHeap.set(parPos, temp);                
-            }
-            else
-                break;
-            currPos = parPos;
-        }
-    } 
-
-    //TASK 2:  ADD MIN LOGIC FOR REMOVE
-    //PRE:  none
-    //POST: if the heap is empty - return null
-    //      swap first & last element
-    //      set currpos to 0th position
-    //      reheap down
-    //      return deleted element
-
-    public E remove(){
-        //remove 'top' element - swap with last position 
-        if (myHeap.size() == 0)
-            return null;
+        for (E item : objList) myHeap.add(item); 
         
-        E delItem = myHeap.get(0);
-        myHeap.set(0, myHeap.get(myHeap.size() - 1));
-        myHeap.remove(myHeap.size() - 1); 
+        // You MUST heapify after adding all elements
+        for (int i = (myHeap.size() / 2) - 1; i >= 0; i--) {
+            siftDown(i);
+        }
+    }
 
-        int currPos = 0;
+    private void siftDown(int index) {
+        int currentPosition = index;
+        while (true) {
+            int left = currentPosition * 2 + 1;
+            int right = currentPosition * 2 + 2;
+            if (left >= myHeap.size()) break;
 
-        //reheap 'down' - get largest (or smallest) child
-        //swap if needed 
-        //TASK 2:  ADD MIN LOGIC FOR REMOVE
-        while (currPos < myHeap.size()){
-            int left  = currPos * 2 + 1;
-            int right = currPos * 2 + 2;
-            if (left >= myHeap.size())
-                break; 
-            if (max){
-                int maxPos = left;
-                if (right < myHeap.size() &&
-                    myHeap.get(maxPos).compareTo(myHeap.get(right)) < 0)
-                    maxPos = right;
-                if (myHeap.get(currPos).compareTo(myHeap.get(maxPos)) < 0){
-                    E temp = myHeap.get(maxPos);
-                    myHeap.set(maxPos, myHeap.get(currPos));
-                    myHeap.set(currPos, temp); 
-                    currPos = maxPos;
+            int targetChild = left;
+            if (right < myHeap.size()) {
+                int childCmp = myHeap.get(right).compareTo(myHeap.get(left));
+                if ((max && childCmp > 0) || (!max && childCmp < 0)) {
+                    targetChild = right;
                 }
-                else
-                    break;
+            }
+
+            int rootCmp = myHeap.get(targetChild).compareTo(myHeap.get(currentPosition));
+            if ((max && rootCmp > 0) || (!max && rootCmp < 0)) {
+                E temp = myHeap.get(currentPosition);
+                myHeap.set(currentPosition, myHeap.get(targetChild));
+                myHeap.set(targetChild, temp);
+                currentPosition = targetChild;
+            } else {
+                break;
             }
         }
-        return delItem;
-    } 
+    }
 
-    //PRE:  none
-    //POST: if the heap is empty - return null
-    //      otherwise return top element
- 
+    private void siftUp(int index) {
+        int currentPosition = index;
+
+        while (currentPosition > 0) {
+            int parentPosition = (currentPosition - 1) / 2;
+            int cmp = myHeap.get(currentPosition).compareTo(myHeap.get(parentPosition));
+
+            // Swap logic for Max-Heap vs Min-Heap
+            if ((max && cmp > 0) || (!max && cmp < 0)) {
+                E temp = myHeap.get(currentPosition);
+                myHeap.set(currentPosition, myHeap.get(parentPosition));
+                myHeap.set(parentPosition, temp);
+                currentPosition = parentPosition;
+            } else {
+                break;
+            }
+        }
+    }
+
+    public void add(E element) {
+        //Add to the end of the list
+        myHeap.add(element);
+        
+        //Sift up from the last position to restore heap property
+        siftUp(myHeap.size() - 1);
+    }
+
+    public E remove() {
+        if (myHeap.size() == 0) return null;
+
+        E delItem = myHeap.get(0);
+        
+        // Move last element to root
+        myHeap.set(0, myHeap.get(myHeap.size() - 1));
+        myHeap.remove(myHeap.size() - 1);
+
+        // Restore property by sifting down from root
+        if (myHeap.size() > 0) {
+            siftDown(0);
+        }
+        
+        return delItem;
+    }
+
     public E top(){
- 
+        //PRE:  none
+        //POST: if the heap is empty - return null otherwise return top element
         if (myHeap.size() == 0)
             return null;
         else
             return myHeap.get(0);
-    
     }
 
     public int getSize(){

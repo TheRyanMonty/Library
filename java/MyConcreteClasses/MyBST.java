@@ -296,13 +296,14 @@ public class MyBST<E extends Comparable<E>> implements MyTree<E> {
   public boolean update(E origE, E newE){
     //PRE:  accepts original element value & new value
     //POST: updates the original value in the BST
+    //If the original is found, delete, if not, return false
     if (delete(origE)) {
-      // 2. If deleted successfully, insert the new element
+      //If deleted successfully, insert the new element
       insert(newE);
       return true;
     }
     
-    // Original element was not found
+    //Original element was not found
     return false;
   }
 
