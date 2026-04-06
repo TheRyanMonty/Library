@@ -7,12 +7,11 @@ public class MyHeap <E extends Comparable<E>>  {
     private MyArrayList<E> myHeap = new MyArrayList<E> ();
     private boolean max;
 
-    //default to max heap 
+    //Constructors
     public MyHeap() {
         max = true;
     }
-    
-    //Set value of max to 'b' - 
+     
     public MyHeap(boolean b) {
         max = b;
     }
@@ -20,7 +19,6 @@ public class MyHeap <E extends Comparable<E>>  {
     public MyHeap(E[] objList) {
         this(objList, true);
     }
-
 
     public MyHeap(E[] objList, boolean b) {
         max = b;
@@ -32,7 +30,10 @@ public class MyHeap <E extends Comparable<E>>  {
         }
     }
 
+    //Class methods
     private void siftDown(int index) {
+        //Pre: Pull in index
+        //Post: Elements are re-ordered as a valid heap for the subtree at index
         int currentPosition = index;
         while (true) {
             int left = currentPosition * 2 + 1;
@@ -60,6 +61,8 @@ public class MyHeap <E extends Comparable<E>>  {
     }
 
     private void siftUp(int index) {
+        //Pre: Pull in index
+        //Post: Elements are re-ordered as a valid heap for the subtree at index
         int currentPosition = index;
 
         while (currentPosition > 0) {
@@ -79,10 +82,14 @@ public class MyHeap <E extends Comparable<E>>  {
     }
 
     public void add(E element) {
+        //Check for null
+        if (element == null) {
+            throw new IllegalArgumentException("Heap element cannot be null");
+        }
         //Add to the end of the list
         myHeap.add(element);
         
-        //Sift up from the last position to restore heap property
+        //Sift up from the last position to restore heap order
         siftUp(myHeap.size() - 1);
     }
 
