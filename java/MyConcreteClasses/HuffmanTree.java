@@ -1,7 +1,5 @@
 //This version implements the huffman tree using a binary tree structure
 
-import java.util.Stack;
-
 public class HuffmanTree implements Comparable<HuffmanTree> {
     // The root of the HuffmanTree
     private HuffmanNode root; 
@@ -82,30 +80,17 @@ public class HuffmanTree implements Comparable<HuffmanTree> {
     //PRE:  accepts current node & array of strings
     //POST: updates the code that represents the leaf nodes 
     private static void assignCode(HuffmanNode root, String[] codes) {
-        if (root == null) return;
-
-        Stack<HuffmanNode> stack = new Stack<>();
-        // Root starts with an empty string as its code (already set in constructor)
-        stack.push(root);
-
-        while (!stack.isEmpty()) {
-            HuffmanNode node = stack.pop();
-
-            // If it's a leaf node, save its code to the array
-            if (node.left == null && node.right == null) {
-                codes[(int)node.element] = node.code;
-            } else {
-                // Process right child: append '1' to the parent's code
-                if (node.right != null) {
-                    node.right.code = node.code + "1";
-                    stack.push(node.right);
-                }
-                // Process left child: append '0' to the parent's code
-                if (node.left != null) {
-                    node.left.code = node.code + "0";
-                    stack.push(node.left);
-                }
-            }
+        if (root.left == null && root.right == null) {
+            codes[(int)root.element] = root.code;
+            return;
+        }
+        if (root.left != null) {
+            root.left.code = root.code + "0";
+            assignCode(root.left, codes);
+        }
+        if (root.right != null) {
+            root.right.code = root.code + "1";
+            assignCode(root.right, codes);
         }
     }
     
