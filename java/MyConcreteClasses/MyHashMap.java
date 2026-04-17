@@ -184,37 +184,46 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
   //      update size
   //      return value
   public V put(K key, V value) {
-    if (get(key) != null) { // Key already in the map
+    // Check if key is already in the map
+    if (get(key) != null) { 
+      //Obtain the bucket index
       int bucketIndex = hash(key.hashCode());
+      //Initialize the bucket
       MyLinkedList<Entry<K, V>> bucket = table[bucketIndex];
+      //Iterate through the bucket with the entry
       for (Entry<K, V> entry : bucket) {
+        //If the entry equals the key, insert/update the value
         if (entry.getKey().equals(key)) {
           V oldValue = entry.value;
           entry.value = value;
+          //Return the old value
           return oldValue;
         }
       }
     }
 
-    // Check load factor
+    //Check size against load factor and capacity
     if (size >= capacity * loadFactorThreshold) {
       if (capacity == MAXIMUM_CAPACITY)
         throw new RuntimeException("Exceeding maximum capacity");
       rehash();
     }
 
+    //Create bucket index
     int bucketIndex = hash(key.hashCode());
 
-    // Create a linked list for the bucket if not already created
+    //Create a linked list entry for the bucket if not already created
     if (table[bucketIndex] == null) {
       table[bucketIndex] = new MyLinkedList<Entry<K, V>>();
     }
 
-    // Add a new entry (key, value) to table[index]
+    //Add a new entry (key, value) to table[index]
     table[bucketIndex].add(new MyMap.Entry<K, V>(key, value));
 
-    size++; // Increase size
+    //Increase size
+    size++; 
 
+    //Return added value
     return value;  
   }
  
